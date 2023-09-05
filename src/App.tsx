@@ -6,6 +6,8 @@ import { Balance } from './Components/Balance';
 import { MainTags } from './Components/MainTags';
 import { TagList } from './Components/TagList';
 import { BalanceByTag } from './Components/BalanceByTag';
+import { BalanceHistoryChart } from './Charts/BalanceHistoryChart';
+import { TagHistoryChart } from './Charts/TagHistoryChart';
 
 function App() {
 
@@ -37,7 +39,12 @@ function App() {
             {selectedTag &&
               <BalanceByTag account={inputData} tag={selectedTag}/>
             }
-
+            <div style={{width: "50%"}}>
+              <BalanceHistoryChart accountLines={inputData.lines}/>
+            </div>
+            <div style={{width: "50%"}}>
+              <TagHistoryChart accountLines={inputData.lines} tag={selectedTag}/>
+            </div>
           </div>
         }
     </div>

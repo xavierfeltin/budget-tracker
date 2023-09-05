@@ -1,0 +1,2 @@
+//source https://www.rapidtables.com/web/color/RGB_Color.html
+export const CHART_COLORS: string[] = ['rgb(213,62,79)', 'rgb(244,109,67)', 'rgb(253,174,97)', 'rgb(254,224,139)', 'rgb(255,255,191)', 'rgb(230,245,152)', 'rgb(171,221,164)', 'rgb(102,194,165)', 'rgb(50,136,189)']

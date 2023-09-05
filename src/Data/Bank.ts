@@ -78,3 +78,24 @@ export function aggregateByTag(lines: IAccountLine[], tag: string): TagLine {
     agregate[tag].subTags = aggregateByTags(taggedLines, 0, tag);
     return agregate;
 }
+
+export function aggregateByDate(lines: IAccountLine[]): TagLine {
+    let agregate: TagLine = {};
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        const strDate = line.date.toLocaleDateString("fr-FR");
+        if (strDate in agregate) {
+            agregate[strDate].credit += line.credit ?? 0;
+            agregate[strDate].debit += line.debit ?? 0;
+        }
+        else {
+            agregate[strDate] = {
+                credit: line.credit ?? 0,
+                debit: line.debit ?? 0,
+                subTags: {}
+            }
+        }
+    }
+    return agregate;
+}
