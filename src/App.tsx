@@ -8,6 +8,7 @@ import { TagList } from './Components/TagList';
 import { BalanceByTag } from './Components/BalanceByTag';
 import { BalanceHistoryChart } from './Charts/BalanceHistoryChart';
 import { TagHistoryChart } from './Charts/TagHistoryChart';
+import { TagRepartitionChart } from './Charts/TagRepartitionChart';
 
 function App() {
 
@@ -17,9 +18,7 @@ function App() {
 
   const handleCSVLoading = useCallback((data: IAccountLines): void => {
     if (data.lines.length > 0) {
-        setInputData((existingData: IAccountLines) => {
-            return {lines: [...existingData.lines, ...data.lines]}
-        });
+        setInputData(data);
         setIsDataGenerated(true);
     }
   }, []);
@@ -44,6 +43,9 @@ function App() {
             </div>
             <div style={{width: "50%"}}>
               <TagHistoryChart accountLines={inputData.lines} tag={selectedTag}/>
+            </div>
+            <div style={{width: "50%"}}>
+              <TagRepartitionChart accountLines={inputData.lines} tag={selectedTag}/>
             </div>
           </div>
         }

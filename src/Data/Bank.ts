@@ -59,7 +59,7 @@ export function extractTags(lines: IAccountLine[]): string[] {
 
 export function aggregateByTag(lines: IAccountLine[], tag: string): TagLine {
     let agregate: TagLine = {};
-    const taggedLines = lines.filter((line) => line.tags.indexOf(tag) !== -1);
+    const taggedLines = tag === "" ? lines : lines.filter((line) => line.tags.indexOf(tag) !== -1);
 
     for (let i = 0; i < taggedLines.length; i++) {
         const line = taggedLines[i];

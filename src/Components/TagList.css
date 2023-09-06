@@ -1,3 +1,26 @@
-.selected {
+.btn-link-selected {
     font-weight: bold;
+    color: red;
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.btn-link {
+    background: none!important;
+    border: none;
+    padding: 0!important;
+    margin: 5px;
+    /*optional*/
+    font-family: arial, sans-serif;
+    /*input has OS specific font-family*/
+    color: #069;
+    text-decoration: underline;
+    cursor: pointer;
 }

@@ -14,7 +14,6 @@ export function BalanceByTag({
     const [group, setGroup] = useState<TagLine>({})
 
     useEffect(() => {
-        debugger;
         const group = aggregateByTag(account.lines, tag)
         setGroup(group);
     }, [account, tag])
