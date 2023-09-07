@@ -17,14 +17,14 @@ export function TagList({
 
     useEffect(() => {
         const list = extractTags(account.lines);
-        setTags(list);
+        setTags(["Tous", ...list]);
     }, [account])
 
     return (
         <div>
             <p> Tags:
                 {tags.map((tag, idx) => (
-                    <button id={"btn-" + tag} name={"btn-" + tag} className={selectedTag === tag ? "btn-link-selected" : "btn-link"} onClick={() => {setSelectedTag(tags[idx]); onTagSelect(tags[idx]);}}>{tag}</button>
+                    <button id={"btn-" + tag} name={"btn-" + tag} className={selectedTag === tag ? "btn-link-selected" : "btn-link"} onClick={() => {setSelectedTag(idx === 0 ? "" : tags[idx]); onTagSelect(idx === 0 ? "" : tags[idx]);}}>{tag}</button>
                 ))}
             </p>
         </div>

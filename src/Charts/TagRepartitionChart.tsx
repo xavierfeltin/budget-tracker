@@ -62,7 +62,8 @@ export function TagRepartitionChart({
             backgroundColor: PIE_BACKGROUND_COLORS,
             borderColor: PIE_BORDER_COLORS,
             datalabels: {
-                anchor: 'center'
+                anchor: 'end',
+                align: 'bottom'
             }
         };
         datasets.push(dataset);
@@ -88,24 +89,18 @@ export function TagRepartitionChart({
                     text: "Repartition of " + tag
                 },
                 datalabels: {
-                    backgroundColor: function(context: Context) {
-                      return context.dataset.backgroundColor;
-                    },
-                    borderColor: 'white',
                     borderRadius: 25,
                     borderWidth: 2,
                     color: 'black',
-                    display: function(context: Context) {
-                      const dataset = context.dataset;
-                      const count = dataset.data.length;
-                      const value: number = dataset.data[context.dataIndex] as number;
-                      return value > (count * 1.5);
-                    },
                     font: {
                       weight: 'bold'
                     },
                     padding: 6,
-                    formatter: Math.round
+                    formatter: function(value: number, context: Context): string {
+                        const currentLabel = context.chart.data.labels ? context.chart.data.labels[context.dataIndex] : "";
+                        return currentLabel + "\n" + Math.round(value).toString();
+                    },
+                    textAlign: "center"
                 }
             }
         }

@@ -10,7 +10,8 @@ import {
   } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
-import { IAccountLine, aggregateByDate } from "../Data/Bank";
+import { IAccountLine, aggregateByDate, aggregateByTag, aggregateByTags } from "../Data/Bank";
+import { Context } from "chartjs-plugin-datalabels";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
@@ -54,43 +55,37 @@ export function TagHistoryChart({
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
 
     useEffect(() => {
-        const taggedLines = accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        let datasets: IChartDataset[] = [];
+
+        const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
+        const groupByTag = tag === "" ? aggregateByTags(taggedLines, 0, tag) : aggregateByTags(taggedLines, 0, tag);
+        const tags = Object.keys(groupByTag);
+
         const groupByDate = aggregateByDate(taggedLines);
-
-        let historyDebit = Object.keys(groupByDate).sort((a, b) => {
-            let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
-            let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
-            return dA > dB ? 1 : -1;
-        }).map((date) => groupByDate[date].debit);
-
-        let historyCredit = Object.keys(groupByDate).sort((a, b) => {
-            let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
-            let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
-            return dA > dB ? 1 : -1;
-        }).map((date) => groupByDate[date].credit);
-
         const dateLabels =  Object.keys(groupByDate).sort((a, b) => {
             let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
             let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
             return dA > dB ? 1 : -1;
         });
 
-        let datasets: IChartDataset[] = [];
-        let dataset: IChartDataset = {
-            label: tag + " Amount (Debit)",
-            yAxisID: 'y',
-            data: historyDebit,
-            backgroundColor: CHART_COLORS[0]
-        };
-        datasets.push(dataset);
+        for (let i = 0; i < tags.length; i++) {
+            const subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) !== -1 && line.tags.indexOf(tags[i]) < 1);
+            const groupSubTagByDate = aggregateByDate(subTaggedLines);
 
-        dataset = {
-            label: tag + " Amount (Credit)",
-            yAxisID: 'y',
-            data: historyCredit,
-            backgroundColor: CHART_COLORS[1]
-        };
-        datasets.push(dataset);
+            let historyDebit = Object.keys(groupByDate).sort((a, b) => {
+                let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
+                let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
+                return dA > dB ? 1 : -1;
+            }).map((date) => groupSubTagByDate[date] ? groupSubTagByDate[date].debit : 0);
+
+            let dataset: IChartDataset = {
+                label: tags[i],
+                yAxisID: 'y',
+                data: historyDebit,
+                backgroundColor: CHART_COLORS[i%CHART_COLORS.length]
+            };
+            datasets.push(dataset);
+        }
 
         let dataToDisplay: IChartData = {
             labels: dateLabels,
@@ -110,14 +105,16 @@ export function TagHistoryChart({
                     title: {
                         display: true,
                         text: 'Date'
-                    }
+                    },
+                    stacked: true
                 },
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Amount'
-                    }
+                    },
+                    stacked: true
                 }
             },
             plugins: {
@@ -126,7 +123,24 @@ export function TagHistoryChart({
                 },
                 title: {
                     display: true,
-                    text: "Evolution of " + tag
+                    text: "Debit history of " + tag
+                },
+                datalabels: {
+                    borderRadius: 25,
+                    borderWidth: 2,
+                    color: 'black',
+                    display: (context: Context): boolean => {
+                        const val: number = context.dataset.data[context.dataIndex] as number;
+                        return val > 0;
+                    },
+                    formatter: (value: number, context: Context): string => {
+                        return Math.round(value).toString();
+                    },
+                    font: {
+                      weight: 'bold'
+                    },
+                    padding: 6,
+                    textAlign: "center"
                 }
             }
         }

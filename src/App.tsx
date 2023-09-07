@@ -35,9 +35,8 @@ function App() {
         {isDataGenerated &&
           <div>
             <TagList account={inputData} onTagSelect={onTagSelect}/>
-            {selectedTag &&
-              <BalanceByTag account={inputData} tag={selectedTag}/>
-            }
+            <BalanceByTag account={inputData} tag={selectedTag}/>
+
             <div style={{width: "50%"}}>
               <BalanceHistoryChart accountLines={inputData.lines}/>
             </div>

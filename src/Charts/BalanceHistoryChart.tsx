@@ -22,6 +22,7 @@ export interface IChartDataset {
     yAxisID?: string;
     data: number[];
     backgroundColor: string;
+    datalabels: any;
 }
 
 export interface IChartData {
@@ -83,13 +84,17 @@ export function BalanceHistoryChart({
             label: "Balance",
             yAxisID: 'y',
             data: history,
-            backgroundColor: CHART_COLORS[0]
+            backgroundColor: CHART_COLORS[0],
+            datalabels: {
+                anchor: 'center',
+                align: 'bottom'
+            }
         };
         datasets.push(dataset);
 
         let dataToDisplay: IChartData = {
             labels: dateLabels,
-            datasets: datasets
+            datasets: datasets,
         };
 
         setChartData(dataToDisplay);
