@@ -11,6 +11,12 @@ export interface IAccountLines {
     lines: IAccountLine[];
 }
 
+export interface IAccountPeriod {
+    begin: Date;
+    end: Date;
+    lines: IAccountLine[];
+}
+
 export type TagLine = {[id: string]: {credit: number, debit: number, subTags: TagLine}; }
 
 export function aggregateByTags(lines: IAccountLine[], tagLevel: number, excludeTag: string): TagLine {
@@ -79,12 +85,16 @@ export function aggregateByTag(lines: IAccountLine[], tag: string): TagLine {
     return agregate;
 }
 
-export function aggregateByDate(lines: IAccountLine[]): TagLine {
+export function aggregateByDate(lines: IAccountLine[], monthly: boolean = false): TagLine {
     let agregate: TagLine = {};
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        const strDate = line.date.toLocaleDateString("fr-FR");
+        let strDate = line.date.toLocaleDateString("fr-FR");
+        if (monthly) {
+            strDate = strDate.slice(strDate.indexOf("/")+1)
+        }
+
         if (strDate in agregate) {
             agregate[strDate].credit += line.credit ?? 0;
             agregate[strDate].debit += line.debit ?? 0;

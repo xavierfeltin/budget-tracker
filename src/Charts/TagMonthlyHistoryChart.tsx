@@ -6,9 +6,10 @@ import {
     Tooltip,
     Title,
     Legend,
-    BarElement
+    LineElement,
+    PointElement,
   } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
 import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
 import { Context } from "chartjs-plugin-datalabels";
@@ -23,6 +24,7 @@ export interface IChartDataset {
     yAxisID?: string;
     data: number[];
     backgroundColor: string;
+    datalabels: any;
 }
 
 export interface IChartData {
@@ -39,14 +41,15 @@ export interface IChartOption {
 
 ChartJS.register(
     LinearScale,
+    PointElement,
+    LineElement,
     CategoryScale,
-    BarElement,
     Title,
     Tooltip,
     Legend
 );
 
-export function TagHistoryChart({
+export function TagHistoryMonthlyChart({
     accountLines,
     tag,
     }: InputRangeProps): JSX.Element {
@@ -56,55 +59,60 @@ export function TagHistoryChart({
 
     useEffect(() => {
         let datasets: IChartDataset[] = [];
-
+        debugger;
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = tag === "" ? aggregateByTags(taggedLines, 0, tag) : aggregateByTags(taggedLines, 0, tag);
         const tags = Object.keys(groupByTag);
 
-        const groupByDate = aggregateByDate(taggedLines);
+        const groupByDate = aggregateByDate(taggedLines, true);
         const dateLabels =  Object.keys(groupByDate).sort((a, b) => {
-            let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
-            let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
+            let dA = new Date(2023, parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
+            let dB = new Date(2023, parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
             return dA > dB ? 1 : -1;
         });
 
+        // Dataset to cover the tag
+        let tagHistoryDebit = Object.keys(groupByDate).sort((a, b) => {
+            let dA = new Date(2023, parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
+            let dB = new Date(2023, parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
+            return dA > dB ? 1 : -1;
+        }).map((date) => groupByDate[date] ? groupByDate[date].debit : 0);
+
+        let dataset: IChartDataset = {
+            label: tag || "Tous",
+            yAxisID: 'y',
+            data: tagHistoryDebit,
+            backgroundColor: CHART_COLORS[0],
+            datalabels: {
+                anchor: 'center',
+                align: 'bottom'
+            }
+        };
+        datasets.push(dataset);
+
+        // Datasets to cover the sub tags
         const processedTags: string[] = [];
         for (let i = 0; i < tags.length; i++) {
             const subTaggedLines = taggedLines.filter((line) => line.tags.indexOf(tags[i]) !== -1 && !line.tags.some(t => processedTags.includes(t)));
-            const groupSubTagByDate = aggregateByDate(subTaggedLines);
+            const groupSubTagByDate = aggregateByDate(subTaggedLines, true);
 
             let historyDebit = Object.keys(groupByDate).sort((a, b) => {
-                let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
-                let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
+                let dA = new Date(2023, parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
+                let dB = new Date(2023, parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
                 return dA > dB ? 1 : -1;
-            }).map((date) => groupSubTagByDate[date] ? groupSubTagByDate[date].debit - groupSubTagByDate[date].credit: 0);
+            }).map((date) => groupSubTagByDate[date] ? groupSubTagByDate[date].debit : 0);
 
-            /*
-            let historyCredit = Object.keys(groupByDate).sort((a, b) => {
-                let dA = new Date(parseInt(a.split("/")[2]), parseInt(a.split("/")[1]) - 1, parseInt(a.split("/")[0]));
-                let dB = new Date(parseInt(b.split("/")[2]), parseInt(b.split("/")[1]) - 1, parseInt(b.split("/")[0]));
-                return dA > dB ? 1 : -1;
-            }).map((date) => groupSubTagByDate[date] ? -groupSubTagByDate[date].credit : 0);
-            */
-
-            let datasetDebit: IChartDataset = {
+            let dataset: IChartDataset = {
                 label: tags[i],
                 yAxisID: 'y',
                 data: historyDebit,
-                backgroundColor: CHART_COLORS[i%CHART_COLORS.length]
+                backgroundColor: CHART_COLORS[(i+1)%CHART_COLORS.length],
+                datalabels: {
+                    anchor: 'center',
+                    align: 'bottom'
+                }
             };
-            datasets.push(datasetDebit);
-
-            /*
-            let datasetCredit: IChartDataset = {
-                label: tags[i],
-                yAxisID: 'y',
-                data: historyCredit,
-                backgroundColor: CHART_COLORS[i%CHART_COLORS.length]
-            };
-            datasets.push(datasetCredit);
-            */
-
+            datasets.push(dataset);
             processedTags.push(tags[i]);
         }
 
@@ -126,16 +134,14 @@ export function TagHistoryChart({
                     title: {
                         display: true,
                         text: 'Date'
-                    },
-                    stacked: true
+                    }
                 },
                 y: {
                     beginAtZero: true,
                     title: {
                         display: true,
                         text: 'Amount'
-                    },
-                    stacked: true
+                    }
                 }
             },
             plugins: {
@@ -144,7 +150,7 @@ export function TagHistoryChart({
                 },
                 title: {
                     display: true,
-                    text: "Debit history of " + (tag || "Tous")
+                    text: "Debit monthly history of " + (tag || "Tous")
                 },
                 datalabels: {
                     borderRadius: 25,
@@ -152,7 +158,7 @@ export function TagHistoryChart({
                     color: 'black',
                     display: (context: Context): boolean => {
                         const val: number = context.dataset.data[context.dataIndex] as number;
-                        return val !== 0;
+                        return val > 0;
                     },
                     formatter: (value: number, context: Context): string => {
                         return Math.round(value).toString();
@@ -171,7 +177,7 @@ export function TagHistoryChart({
 
     return (
         <div>
-            <Bar options={chartOption} data={chartData} />
+            <Line options={chartOption} data={chartData} />
         </div>
    )
 }

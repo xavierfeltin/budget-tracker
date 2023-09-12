@@ -86,7 +86,7 @@ export function TagRepartitionChart({
                 },
                 title: {
                     display: true,
-                    text: "Repartition of " + tag
+                    text: "Repartition of " + (tag || "Tous")
                 },
                 datalabels: {
                     borderRadius: 25,

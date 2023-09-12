@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import { IAccountLine, IAccountLines } from "../Data/Bank";
+import { IAccountLine, IAccountPeriod } from "../Data/Bank";
 
 export interface InputRangeProps {
-    onValuesChange: (loadedData: IAccountLines) => void;
-}
-
-const emptyData: IAccountLines = {
-    lines: []
+    onValuesChange: (loadedData: IAccountPeriod[]) => void;
 }
 
 export function CSVBankExtractLoader({
     onValuesChange} : InputRangeProps) {
 
     const [files, setFiles] = useState<File[]>([]);
-    const [data, setData] = useState<IAccountLines>({...emptyData});
+    const [data, setData] = useState<IAccountPeriod[]>([]);
 
     const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
         const nbFiles = e.currentTarget.files?.length || 0;
@@ -28,7 +24,7 @@ export function CSVBankExtractLoader({
 
     const handleOnSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        setData({...emptyData});
+        setData([]);
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
@@ -60,26 +56,31 @@ export function CSVBankExtractLoader({
 
         // Ignore first header
         csvRows = rows.slice(1).filter((row: string) => row !== "");
-        const data: IAccountLines = {
-            lines: csvRows.map(row => {
-                const values = row.split(fieldSeparator).map((field) => field.replace(/['"]+/g, ''));
+        const lines: IAccountLine[] = csvRows.map(row => {
+            const values = row.split(fieldSeparator).map((field) => field.replace(/['"]+/g, ''));
 
-                // Expecting dd/mm/yyyy
-                const dateElements: number[] = values[headersIdx[0]].split("/").map((elem) => Number.parseFloat(elem));
+            // Expecting dd/mm/yyyy
+            const dateElements: number[] = values[headersIdx[0]].split("/").map((elem) => Number.parseFloat(elem));
 
-                const dataRow: IAccountLine = {
-                  date: new Date(dateElements[2], dateElements[1] - 1, dateElements[0]),
-                  debit: values[headersIdx[1]] ? Number.parseFloat(values[headersIdx[1]]) * -1 : undefined, // only positive values
-                  credit: values[headersIdx[2]] ? Number.parseFloat(values[headersIdx[2]]) : undefined,
-                  label: values[headersIdx[3]],
-                  balance: Number.parseFloat(values[headersIdx[4]]),
-                  tags: values[headersIdx[5]].split(">"),
-                };
+            const dataRow: IAccountLine = {
+              date: new Date(dateElements[2], dateElements[1] - 1, dateElements[0]),
+              debit: values[headersIdx[1]] ? Number.parseFloat(values[headersIdx[1]]) * -1 : undefined, // only positive values
+              credit: values[headersIdx[2]] ? Number.parseFloat(values[headersIdx[2]]) : undefined,
+              label: values[headersIdx[3]],
+              balance: Number.parseFloat(values[headersIdx[4]]),
+              tags: values[headersIdx[5]].split(">"),
+            };
 
-                return dataRow;
-              })
-        }
-        setData(data);
+            return dataRow;
+        })
+
+        const data: IAccountPeriod = {
+            begin: new Date(lines[0].date.getFullYear(), lines[0].date.getMonth(), 1),
+            end: new Date(lines[0].date.getFullYear(), lines[0].date.getMonth() + 1, 0),
+            lines: lines
+        };
+
+        setData(prev => [...prev, data]);
     };
 
     useEffect(() => {
@@ -94,7 +95,7 @@ export function CSVBankExtractLoader({
                 id={"csvFileInput"}
                 accept={".csv"}
                 onChange={handleOnChange}
-                multiple={false}
+                multiple={true}
             />
 
             <button
@@ -102,7 +103,7 @@ export function CSVBankExtractLoader({
                 handleOnSubmit(e);
                 }}
             >
-                Import CSV Bank Extract
+            Import Monthly CSV bank extracts
             </button>
             </form>
         </div>
