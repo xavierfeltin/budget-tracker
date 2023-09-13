@@ -58,7 +58,7 @@ export function TagHistoryChart({
         let datasets: IChartDataset[] = [];
 
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
-        const groupByTag = tag === "" ? aggregateByTags(taggedLines, 0, tag) : aggregateByTags(taggedLines, 0, tag);
+        const groupByTag = aggregateByTags(taggedLines, -1, tag);
         const tags = Object.keys(groupByTag);
 
         const groupByDate = aggregateByDate(taggedLines);

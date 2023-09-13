@@ -21,16 +21,20 @@ export type TagLine = {[id: string]: {credit: number, debit: number, subTags: Ta
 
 export function aggregateByTags(lines: IAccountLine[], tagLevel: number, excludeTag: string): TagLine {
     let agregate: TagLine = {};
+    let isRecursive = tagLevel < 0;
 
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
 
-        let tag = line.tags[tagLevel];
-        if (tag === excludeTag && tagLevel < (line.tags.length - 1)) {
-            tag = line.tags[tagLevel + 1];
+        let idx = excludeTag === "" ? 0 : line.tags.indexOf(excludeTag);
+        let level = isRecursive ? (idx % line.tags.length) : tagLevel;
+        let tag = line.tags[level];
+
+        if (tag === excludeTag && level < (line.tags.length - 1)) {
+            tag = line.tags[level + 1];
         }
-        else if (tag === excludeTag && tagLevel === (line.tags.length - 1)) {
-            tag = "Undefined";
+        else if (tag === excludeTag && level === (line.tags.length - 1)) {
+            tag = isRecursive ? line.tags[0] : "Undefined";
         }
 
         if (tag in agregate) {
