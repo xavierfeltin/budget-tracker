@@ -28,8 +28,8 @@ export function Balance({
 
     return (
         <div>
-            <p>Period from {account.begin.toLocaleDateString()} to {account.end.toLocaleDateString()} </p>
-            <p>Last balance: {balance} / Debit: -{debit} / Credit: +{credit} </p>
+            <h1> Period from {account.begin.toLocaleDateString()} to {account.end.toLocaleDateString()} </h1>
+            <p>Last balance: {balance} - Debit: -{debit} - Credit: +{credit} </p>
         </div>
     )
 }

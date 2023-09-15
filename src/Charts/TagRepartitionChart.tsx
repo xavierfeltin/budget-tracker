@@ -52,24 +52,6 @@ export function TagRepartitionChart({
     const [chartData, setChartData] = useState<IChartData>({labels: [], datasets: []});
 
     useEffect(() => {
-        /*
-        const group = aggregateByTag(accountLines, tag);
-        const tagLabels = Object.keys(group[tag]?.subTags).filter((subTag) => group[tag].subTags[subTag].debit !== 0).sort();
-        const data: number[] = Object.keys(group[tag]?.subTags).filter((subTag) => group[tag].subTags[subTag].debit !== 0).sort().map((subTag) => group[tag].subTags[subTag].debit);
-
-        let datasets: IChartDataset[] = [];
-        let dataset: IChartDataset = {
-            data: data,
-            backgroundColor: PIE_BACKGROUND_COLORS,
-            borderColor: PIE_BORDER_COLORS,
-            datalabels: {
-                anchor: 'end',
-                align: 'bottom'
-            }
-        };
-        datasets.push(dataset);
-        */
-
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
         const tagLabels = Object.keys(groupByTag).sort();

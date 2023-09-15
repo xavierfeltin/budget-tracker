@@ -22,11 +22,10 @@ export function TagList({
 
     return (
         <div>
-            <p> Tags:
-                {tags.map((tag, idx) => (
-                    <button id={"btn-" + tag} name={"btn-" + tag} className={(selectedTag === tag || (tag === "Tous" && selectedTag === "")) ? "btn-link-selected" : "btn-link"} onClick={() => {setSelectedTag(idx === 0 ? "" : tags[idx]); onTagSelect(idx === 0 ? "" : tags[idx]);}}>{tag}</button>
-                ))}
-            </p>
+            <h1> Tags </h1>
+            {tags.map((tag, idx) => (
+                <button id={"btn-" + tag} name={"btn-" + tag} className={(selectedTag === tag || (tag === "Tous" && selectedTag === "")) ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedTag(idx === 0 ? "" : tags[idx]); onTagSelect(idx === 0 ? "" : tags[idx]);}}>{tag}</button>
+            ))}
         </div>
     )
 }

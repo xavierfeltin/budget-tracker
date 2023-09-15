@@ -8,8 +8,9 @@ import {
     Legend,
     LineElement,
     PointElement,
+    BarElement
   } from 'chart.js';
-import { Line } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import { CHART_COLORS } from "./ColorBank";
 import { IAccountLine, aggregateByDate, aggregateByTags } from "../Data/Bank";
 import { Context } from "chartjs-plugin-datalabels";
@@ -24,7 +25,7 @@ export interface IChartDataset {
     yAxisID?: string;
     data: number[];
     backgroundColor: string;
-    datalabels: any;
+    datalabels?: any;
 }
 
 export interface IChartData {
@@ -44,6 +45,7 @@ ChartJS.register(
     PointElement,
     LineElement,
     CategoryScale,
+    BarElement,
     Title,
     Tooltip,
     Legend
@@ -82,10 +84,7 @@ export function TagHistoryMonthlyChart({
             yAxisID: 'y',
             data: tagHistoryDebit,
             backgroundColor: CHART_COLORS[0],
-            datalabels: {
-                anchor: 'center',
-                align: 'bottom'
-            }
+
         };
         datasets.push(dataset);
 
@@ -105,11 +104,7 @@ export function TagHistoryMonthlyChart({
                 label: tags[i],
                 yAxisID: 'y',
                 data: historyDebit,
-                backgroundColor: CHART_COLORS[(i+1)%CHART_COLORS.length],
-                datalabels: {
-                    anchor: 'center',
-                    align: 'bottom'
-                }
+                backgroundColor: CHART_COLORS[(i+1)%CHART_COLORS.length]
             };
             datasets.push(dataset);
             processedTags.push(tags[i]);
@@ -152,8 +147,8 @@ export function TagHistoryMonthlyChart({
                     text: "Debit monthly history of " + (tag || "Tous")
                 },
                 datalabels: {
-                    borderRadius: 25,
-                    borderWidth: 2,
+                    align: 'end',
+                    anchor: 'end',
                     color: 'black',
                     display: (context: Context): boolean => {
                         const val: number = context.dataset.data[context.dataIndex] as number;
@@ -176,7 +171,7 @@ export function TagHistoryMonthlyChart({
 
     return (
         <div>
-            <Line options={chartOption} data={chartData} />
+            <Bar options={chartOption} data={chartData} />
         </div>
    )
 }

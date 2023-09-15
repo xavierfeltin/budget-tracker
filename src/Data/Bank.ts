@@ -15,6 +15,7 @@ export interface IAccountPeriod {
     begin: Date;
     end: Date;
     lines: IAccountLine[];
+    isAggregated: boolean;
 }
 
 export type TagLine = {[id: string]: {credit: number, debit: number, subTags: TagLine}; }
@@ -112,4 +113,23 @@ export function aggregateByDate(lines: IAccountLine[], monthly: boolean = false)
         }
     }
     return agregate;
+}
+
+export function getAccountPeriodStr(account: IAccountPeriod): string {
+    let aggregatedMention = account.isAggregated ? " (Aggregated) " : "";
+    return account.begin.toLocaleDateString() + " - " + account.end.toLocaleDateString() + aggregatedMention;
+}
+
+export function getWholePeriod(accounts: IAccountPeriod[]): IAccountPeriod {
+    const wholePeriod: IAccountPeriod = accounts.reduce((result, period) => {
+        return {...result,
+            begin: period.begin < result.begin ? period.begin : result.begin,
+            end: period.begin > result.begin ? period.begin : result.begin,
+            lines: [...result.lines, ...period.lines],
+            isAggregated: true}
+      });
+
+      wholePeriod.lines.sort((a: IAccountLine, b: IAccountLine) => {return a.date > b.date ? 1 : -1;});
+    return wholePeriod;
+
 }

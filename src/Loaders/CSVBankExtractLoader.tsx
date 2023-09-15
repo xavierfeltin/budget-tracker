@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { IAccountLine, IAccountPeriod } from "../Data/Bank";
+import { CSVUploader } from "./CSVUploader";
 
 export interface InputRangeProps {
     onValuesChange: (loadedData: IAccountPeriod[]) => void;
@@ -8,22 +9,9 @@ export interface InputRangeProps {
 export function CSVBankExtractLoader({
     onValuesChange} : InputRangeProps) {
 
-    const [files, setFiles] = useState<File[]>([]);
     const [data, setData] = useState<IAccountPeriod[]>([]);
 
-    const handleOnChange = (e: React.FormEvent<HTMLInputElement>) => {
-        const nbFiles = e.currentTarget.files?.length || 0;
-        const files: File[] = [];
-        for (let i = 0; i < nbFiles; i++) {
-            if (e.currentTarget.files) {
-                files.push(e.currentTarget.files[i]);
-            }
-        }
-        setFiles(files);
-    };
-
-    const handleOnSubmit = (e: React.FormEvent<HTMLButtonElement>) => {
-        e.preventDefault();
+    const handleFiles = (files: File[]) => {
         setData([]);
 
         for (let i = 0; i < files.length; i++) {
@@ -77,10 +65,11 @@ export function CSVBankExtractLoader({
         const data: IAccountPeriod = {
             begin: new Date(lines[0].date.getFullYear(), lines[0].date.getMonth(), 1),
             end: new Date(lines[0].date.getFullYear(), lines[0].date.getMonth() + 1, 0),
-            lines: lines
+            lines: lines,
+            isAggregated: false
         };
 
-        setData(prev => [...prev, data]);
+        setData(prev => [...prev, data].sort((a, b) => a.end > b.end ? 1 : -1));
     };
 
     useEffect(() => {
@@ -88,24 +77,6 @@ export function CSVBankExtractLoader({
     }, [data, onValuesChange]);
 
     return (
-        <div>
-            <form>
-            <input
-                type={"file"}
-                id={"csvFileInput"}
-                accept={".csv"}
-                onChange={handleOnChange}
-                multiple={true}
-            />
-
-            <button
-                onClick={(e) => {
-                handleOnSubmit(e);
-                }}
-            >
-            Import Monthly CSV bank extracts
-            </button>
-            </form>
-        </div>
+        <CSVUploader handleFiles={handleFiles} />
     )
 }
