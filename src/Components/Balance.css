@@ -1,0 +1,26 @@
+.row {
+    width: 100%;
+    text-align: center;
+  }
+
+.column {
+    text-align: center;
+    width: 10%;
+    vertical-align: top;/*Fix for different     height elements*/
+    margin: 32px;
+    display: inline-block;
+    background-color: #87b5fa;
+    color: #fff;
+}
+
+.columnTitle {
+    min-width: 30%;
+    vertical-align: top;/*Fix for different     height elements*/
+    margin: 32px;
+    display: inline-block;
+    color: black;
+}
+
+h2.title {
+    font-size: 20px;
+}

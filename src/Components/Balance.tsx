@@ -1,3 +1,4 @@
+import "./Balance.css";
 import { useEffect, useState } from "react";
 import { IAccountPeriod } from "../Data/Bank";
 
@@ -28,8 +29,20 @@ export function Balance({
 
     return (
         <div>
-            <h1> Period from {account.begin.toLocaleDateString()} to {account.end.toLocaleDateString()} </h1>
-            <p>Last balance: {balance} - Debit: -{debit} - Credit: +{credit} </p>
+            <div className="row">
+                <div className="column">
+                    <h2 className="title">Last balance</h2>
+                    <p>{balance}</p>
+                </div>
+                <div className="column">
+                    <h2 className="title">Debit</h2>
+                    <p>{debit}</p>
+                </div>
+                <div className="column">
+                    <h2 className="title">Credit</h2>
+                    <p>{credit}</p>
+                </div>
+            </div>
         </div>
     )
 }

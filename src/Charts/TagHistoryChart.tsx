@@ -32,6 +32,7 @@ export interface IChartData {
 
 export interface IChartOption {
     responsive: boolean;
+    maintainAspectRatio?: boolean;
     scales: any;
     animation: any;
     plugins: any;
@@ -117,6 +118,7 @@ export function TagHistoryChart({
 
         let options: IChartOption = {
             responsive: true,
+            maintainAspectRatio: false,
             animation: {
                 duration: 0
             },
@@ -171,7 +173,7 @@ export function TagHistoryChart({
 
     return (
         <div>
-            <Bar options={chartOption} data={chartData} />
+            <Bar options={chartOption} data={chartData} style={{width:"100%",height:"100%"}} />
         </div>
    )
 }

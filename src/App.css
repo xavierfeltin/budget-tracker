@@ -7,3 +7,14 @@ div.gridLayout {
 div.leftColumn {
   margin: 8px;
 }
+
+.rowChart {
+  width: 100%;
+}
+
+.columnChart {
+  width: 48%;
+  vertical-align: top;/*Fix for different     height elements*/
+  margin: 8px;
+  display: inline-block;
+}

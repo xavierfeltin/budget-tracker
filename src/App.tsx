@@ -59,18 +59,23 @@ function App() {
           <div>
 
             <Balance account={selectedPeriod}/>
-            <div style={{width: "50%"}}>
-              <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+
+            <div className='rowChart'>
+              <div className='columnChart'>
+                <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+              </div>
+              <div className='columnChart'>
+                <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+              </div>
             </div>
 
-            <div style={{width: "50%"}}>
-              <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-            </div>
-            <div style={{width: "50%"}}>
-              <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-            </div>
-            <div style={{width: "50%"}}>
-              <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+            <div className='rowChart'>
+              <div className='columnChart'>
+                <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+              </div>
+              <div className='columnChart'>
+                <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+              </div>
             </div>
           </div>
         }
