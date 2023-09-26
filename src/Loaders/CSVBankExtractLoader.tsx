@@ -29,10 +29,17 @@ export function CSVBankExtractLoader({
     };
 
     const csvFileToArray = (filename: string, csv: string) => {
-        const lineSeperator = "\r\n";
+        debugger;
+        const lineSeperator1 = "\r\n";
+        const lineSeperator2 = "\n";
+        let lineSeperator = lineSeperator1;
         const fieldSeparator = ";";
         const headers = ["Date","Débit","Crédit","Libellé","Solde","Tags"];
-        let rows = csv.split(lineSeperator);
+        let rows = csv.split(lineSeperator1);
+        if (rows.length === 1) {
+            rows = csv.split(lineSeperator2);
+            lineSeperator = lineSeperator2;
+        }
 
         // Determine headers order
         let re = /"/gi;
@@ -49,13 +56,12 @@ export function CSVBankExtractLoader({
 
             // Expecting dd/mm/yyyy
             const dateElements: number[] = values[headersIdx[0]].split("/").map((elem) => Number.parseFloat(elem));
-
             const dataRow: IAccountLine = {
               date: new Date(dateElements[2], dateElements[1] - 1, dateElements[0]),
-              debit: values[headersIdx[1]] ? Number.parseFloat(values[headersIdx[1]]) * -1 : undefined, // only positive values
-              credit: values[headersIdx[2]] ? Number.parseFloat(values[headersIdx[2]]) : undefined,
+              debit: values[headersIdx[1]] ? Number.parseFloat(values[headersIdx[1]].replace(',', '.')) * -1 : undefined, // only positive values
+              credit: values[headersIdx[2]] ? Number.parseFloat(values[headersIdx[2]].replace(',', '.')) : undefined,
               label: values[headersIdx[3]],
-              balance: Number.parseFloat(values[headersIdx[4]]),
+              balance: Number.parseFloat(values[headersIdx[4]].replace(',', '.')),
               tags: values[headersIdx[5]].split(">"),
             };
 
@@ -77,6 +83,6 @@ export function CSVBankExtractLoader({
     }, [data, onValuesChange]);
 
     return (
-        <CSVUploader handleFiles={handleFiles} />
+        <CSVUploader handleFiles={handleFiles} formId="load-accounts" actionLabel="Upload Bank accounts" />
     )
 }

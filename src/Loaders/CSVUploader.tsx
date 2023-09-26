@@ -2,10 +2,14 @@ import { useRef } from 'react';
 import './CSVUploader.css';
 
 export interface InputRangeProps {
+    formId: string;
+    actionLabel: string;
     handleFiles: (files: File[]) => void;
 }
 
 export function CSVUploader({
+    formId,
+    actionLabel,
     handleFiles} : InputRangeProps) {
 
     // Create a reference to the hidden file input element
@@ -23,12 +27,12 @@ export function CSVUploader({
     };
 
     return (
-        <div style={{margin: 5}}>
+        <div style={{marginLeft: 5, marginRight: 5, marginTop: 5, marginBottom: 32}}>
             <form>
-                <label htmlFor="csvFileInput" className="button-upload">Upload Bank accounts...</label>
+                <label htmlFor={formId} className="button-upload">{actionLabel}</label>
                 <input
                     type={"file"}
-                    id={"csvFileInput"}
+                    id={formId}
                     accept={".csv"}
                     onChange={handleOnChange}
                     multiple={true}

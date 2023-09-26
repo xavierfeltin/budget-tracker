@@ -18,6 +18,11 @@ export interface IAccountPeriod {
     isAggregated: boolean;
 }
 
+export type TMapping = {[match: string]: string}
+export interface IMappingLine {
+    match: string;
+    tags: string;
+}
 export type TagLine = {[id: string]: {credit: number, debit: number, subTags: TagLine}; }
 
 export function aggregateByTags(lines: IAccountLine[], tagLevel: number, excludeTag: string): TagLine {
@@ -132,4 +137,85 @@ export function getWholePeriod(accounts: IAccountPeriod[]): IAccountPeriod {
       wholePeriod.lines.sort((a: IAccountLine, b: IAccountLine) => {return a.date > b.date ? 1 : -1;});
     return wholePeriod;
 
+}
+
+export function isPaymentLabel(label: string): boolean {
+    const regExp = new RegExp(/(PAIEMENT\s)/);
+    const test = regExp.test(label.toUpperCase());
+    return test;
+}
+
+export function isDirectDebitLabel(label: string): boolean {
+    const regExp = new RegExp(/(PRLV\sSEPA\s)/);
+    const test = regExp.test(label.toUpperCase());
+    return test;
+}
+
+export function isBankTransferLabel(label: string): boolean {
+    const regExp = new RegExp(/(VIR\s)/);
+    const test = regExp.test(label.toUpperCase());
+    return test;
+}
+
+export function isWithdrawalLabel(label: string): boolean {
+    const regExp = new RegExp(/(RETRAIT\sDAB\s)/);
+    const test = regExp.test(label.toUpperCase());
+    return test;
+}
+
+export function getPaymentId(label: string): string {
+    //PAIEMENT CB 3007 FR LYON LA-BARGE CARTE 2178
+    const matches = label.toUpperCase().match(/(?:PAIEMENT\s(?:CB|PSC)\s\d\d\d\d\s)(([a-zA-Z]|-|_|\d+|\/|\*|\s)+)(?:CARTE\s\d\d\d\d)/);
+    return matches ? matches[1] : "";
+}
+
+export function getDirectDebitId(label: string): string {
+    const matches = label.toUpperCase().match(/(?:PRLV\sSEPA\s)(([a-zA-Z]|-|_|\s)+)/);
+    return matches ? matches[1] : "";
+}
+
+export function getBankTransferId(label: string): string {
+    const matches = label.toUpperCase().match(/(?:VIR\s)(([a-zA-Z]|-|_|\s)+)/);
+    return matches ? matches[1] : "";
+}
+
+export function getWithdrawalId(label: string): string {
+    const matches = label.toUpperCase().match(/RETRAIT DAB/);
+    return matches ? matches[0] : "";
+}
+
+export function extractIdFromLabel(label: string): string {
+    if (isBankTransferLabel(label)) {
+        return getBankTransferId(label).trim();
+    }
+
+    if (isPaymentLabel(label)) {
+        return getPaymentId(label).trim();
+    }
+
+    if (isDirectDebitLabel(label)) {
+        return getDirectDebitId(label).trim();
+    }
+
+    if (isWithdrawalLabel(label)) {
+        return getWithdrawalId(label).trim();
+    }
+
+    return label.trim();
+}
+
+export function tagPeriods(periods: IAccountPeriod[], mapping: TMapping): IAccountPeriod[] {
+    debugger;
+    const taggedPeriods = [...periods];
+    for (let i = 0; i < taggedPeriods.length; i++) {
+        const period = taggedPeriods[i];
+        for (let j = 0; j < period.lines.length; j++) {
+            const line = period.lines[j];
+            const id = extractIdFromLabel(line.label);
+            if (mapping[id]) {
+                line.tags = mapping[id].split('>');
+            }
+        }
+    }
+    return taggedPeriods;
 }
