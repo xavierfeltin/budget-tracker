@@ -99,28 +99,25 @@ function App() {
             <TagList account={selectedPeriod} onTagSelect={onTagSelect}/>
           }
         </div>
+
         {isDataGenerated &&
           <div>
-
             <Balance account={selectedPeriod}/>
 
-            <div className='rowChart'>
-              <div className='columnChart'>
+            {selectedTag === "" &&
+              <div>
                 <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
-              </div>
-              <div className='columnChart'>
-                <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-              </div>
-            </div>
-
-            <div className='rowChart'>
-              <div className='columnChart'>
                 <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
               </div>
-              <div className='columnChart'>
+            }
+
+            {selectedTag !== "" &&
+              <div>
+                <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
                 <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
               </div>
-            </div>
+            }
           </div>
         }
     </div>

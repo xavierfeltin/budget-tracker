@@ -129,6 +129,9 @@ export function BalanceHistoryChart({
                 title: {
                     display: true,
                     text: "Evolution of the account's balance"
+                },
+                datalabels: {
+                    display: false
                 }
             }
         }
@@ -137,8 +140,8 @@ export function BalanceHistoryChart({
    }, [accountLines]);
 
     return (
-        <div>
-            <Line options={chartOption} data={chartData} style={{width:"100%",height:"100%"}}/>
+        <div className="time-chart-wrapper">
+            <Line options={chartOption} data={chartData}/>
         </div>
    )
 }

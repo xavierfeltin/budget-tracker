@@ -18,3 +18,16 @@ div.leftColumn {
   margin: 8px;
   display: inline-block;
 }
+
+.time-chart-wrapper {
+  border: 1px solid lightgray;
+  height: 300px;
+  width: 90%;
+  margin: 8px;
+}
+
+.pie-chart-wrapper {
+  border: 1px solid lightgray;
+  width: 50%;
+  margin: 8px;
+}

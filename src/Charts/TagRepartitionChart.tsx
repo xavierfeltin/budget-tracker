@@ -111,8 +111,8 @@ export function TagRepartitionChart({
    }, [accountLines, tag]);
 
     return (
-        <div>
-            <Pie options={chartOption} data={chartData} />
+        <div className="pie-chart-wrapper">
+            <Pie options={chartOption} data={chartData}/>
         </div>
    )
 }

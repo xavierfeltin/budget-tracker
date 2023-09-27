@@ -35,6 +35,7 @@ export interface IChartData {
 
 export interface IChartOption {
     responsive: boolean;
+    maintainAspectRatio?: boolean;
     scales: any;
     animation: any;
     plugins: any;
@@ -119,6 +120,7 @@ export function TagHistoryMonthlyChart({
 
         let options: IChartOption = {
             responsive: true,
+            maintainAspectRatio: false,
             animation: {
                 duration: 0
             },
@@ -170,8 +172,8 @@ export function TagHistoryMonthlyChart({
    }, [accountLines, tag]);
 
     return (
-        <div>
-            <Bar options={chartOption} data={chartData} />
+        <div className="time-chart-wrapper">
+            <Bar options={chartOption} data={chartData}/>
         </div>
    )
 }
