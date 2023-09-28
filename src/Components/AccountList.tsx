@@ -19,10 +19,14 @@ export function AccountList({
             <h1>Available Periods</h1>
             <div  className="vertical-menu">
                 {periods.map((account, idx)=> {
+                    debugger;
+                    const nbUntaggedLines = account.lines.filter((line) => line.tags.length === 0).length;
+
                     return <button id={"btn-" + getAccountPeriodStr(account)}
                             name={"btn-" + getAccountPeriodStr(account)}
                             className={(selectedPeriod === idx) ? "btn-link-selected vertical-menu" : "btn-link vertical-menu"}
-                            onClick={() => {setSelectedPeriod(idx); onAccountSelect(periods[idx])}}>{getAccountPeriodStr(account)}
+                            onClick={() => {setSelectedPeriod(idx); onAccountSelect(periods[idx])}}>
+                        {getAccountPeriodStr(account)} {nbUntaggedLines > 0 ? "(lines to tag " + nbUntaggedLines + ")" : ""}
                     </button>
                 })}
             </div>

@@ -62,7 +62,7 @@ export function CSVBankExtractLoader({
               credit: values[headersIdx[2]] ? Number.parseFloat(values[headersIdx[2]].replace(',', '.')) : undefined,
               label: values[headersIdx[3]],
               balance: Number.parseFloat(values[headersIdx[4]].replace(',', '.')),
-              tags: values[headersIdx[5]].split(">"),
+              tags: values[headersIdx[5]] === "" ? [] : values[headersIdx[5]].split(">"),
             };
 
             return dataRow;

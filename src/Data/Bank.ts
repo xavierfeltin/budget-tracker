@@ -25,6 +25,12 @@ export interface IMappingLine {
 }
 export type TagLine = {[id: string]: {credit: number, debit: number, subTags: TagLine}; }
 
+export interface ITag {
+    tag: string;
+    count: number;
+    frequency: number;
+}
+
 export function aggregateByTags(lines: IAccountLine[], tagLevel: number, excludeTag: string): TagLine {
     let agregate: TagLine = {};
     let isRecursive = tagLevel < 0;
@@ -71,6 +77,31 @@ export function extractTags(lines: IAccountLine[]): string[] {
     });
 
     return tags.sort();
+}
+
+export function extractTagsWithCount(lines: IAccountLine[]): ITag[] {
+    let tags: ITag[] = [];
+    for (let i = 0; i < lines.length; i++) {
+        for (let j = 0; j < lines[i].tags.length; j++) {
+            const tagIdx = tags.findIndex((tag) => tag.tag === lines[i].tags[j]);
+            if (tagIdx === -1) {
+                tags.push({tag: lines[i].tags[j], count: 1, frequency: 1/lines.length});
+            }
+            else {
+                tags[tagIdx].count++;
+                tags[tagIdx].frequency = tags[tagIdx].count/lines.length;
+            }
+        }
+    }
+
+    return tags.sort((a, b) => {
+        const freqA = Math.floor(a.frequency * 100);
+        const freqB = Math.floor(b.frequency * 100);
+        if (freqA === freqB) {
+            return a.tag > b.tag ? 1 : -1;
+        }
+        return (Math.floor(b.frequency * 100) - Math.floor(a.frequency * 100));
+    });
 }
 
 export function aggregateByTag(lines: IAccountLine[], tag: string): TagLine {

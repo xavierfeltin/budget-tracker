@@ -73,22 +73,14 @@ function App() {
   return (
     <div className='gridLayout'>
         <div className='leftColumn'>
+          <div className='section-wrapper'>
           {!isMappingLoaded &&
             <CSVBankExtractLoader onValuesChange={handleCSVLoading}/>
-          }
-
-          {!isDataGenerated &&
-            <MappingExtractLoader onValuesChange={handleMappingLoading}/>
-          }
-
-          {isMappingLoaded &&
-            <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading}/>
           }
 
           {isDataToTagLoaded &&
             <ExportTaggedCSV periods={linesToTag}></ExportTaggedCSV>
           }
-
           {isDataGenerated &&
             <ExportMapping periods={periods}></ExportMapping>
           }
@@ -98,6 +90,14 @@ function App() {
           {isDataGenerated &&
             <TagList account={selectedPeriod} onTagSelect={onTagSelect}/>
           }
+          </div>
+
+          <div className='section-wrapper'>
+            <MappingExtractLoader onValuesChange={handleMappingLoading}/>
+            {isMappingLoaded &&
+              <CSVBankExtractLoader onValuesChange={handleCSVToTagLoading}/>
+            }
+          </div>
         </div>
 
         {isDataGenerated &&

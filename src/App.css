@@ -31,3 +31,9 @@ div.leftColumn {
   width: 50%;
   margin: 8px;
 }
+
+.section-wrapper {
+  border: 1px solid lightgray;
+  margin: 8px;
+  padding: 8px;
+}

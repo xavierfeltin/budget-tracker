@@ -32,15 +32,15 @@ export function Balance({
             <div className="row">
                 <div className="column">
                     <h2 className="title">Last balance</h2>
-                    <p>{balance}</p>
+                    <p>{balance.toFixed(2)}</p>
                 </div>
                 <div className="column">
                     <h2 className="title">Debit</h2>
-                    <p>{debit}</p>
+                    <p>-{debit.toFixed(2)}</p>
                 </div>
                 <div className="column">
                     <h2 className="title">Credit</h2>
-                    <p>{credit}</p>
+                    <p>+{credit.toFixed(2)}</p>
                 </div>
             </div>
         </div>
