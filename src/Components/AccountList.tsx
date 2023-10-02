@@ -19,7 +19,6 @@ export function AccountList({
             <h1>Available Periods</h1>
             <div  className="vertical-menu">
                 {periods.map((account, idx)=> {
-                    debugger;
                     const nbUntaggedLines = account.lines.filter((line) => line.tags.length === 0).length;
 
                     return <button id={"btn-" + getAccountPeriodStr(account)}

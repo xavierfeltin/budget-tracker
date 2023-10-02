@@ -12,6 +12,7 @@ import { AccountList } from './Components/AccountList';
 import { ExportMapping } from './Exporters/ExportMapping';
 import { MappingExtractLoader } from './Loaders/MappingExtractLoader';
 import { ExportTaggedCSV } from './Exporters/ExportTaggedCSV';
+import { Lines } from './Components/Lines';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
   });
   const [mapping, setMapping] = useState<TMapping>({});
   const [linesToTag, setLinesToTag] = useState<IAccountPeriod[]>([]);
+  const [selectedMode, setSelectedMode] = useState<string>("charts");
 
   const handleCSVLoading = useCallback((data: IAccountPeriod[]): void => {
     if (data.length > 0) {
@@ -102,21 +104,37 @@ function App() {
 
         {isDataGenerated &&
           <div>
-            <Balance account={selectedPeriod}/>
+            <Balance account={selectedPeriod} tag={selectedTag}/>
 
-            {selectedTag === "" &&
+            <div>
+              <button id={"btn-display-charts"} name={"btn-display-charts"} className={selectedMode === "charts" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("charts")}}>
+                  Display charts
+              </button>
+              <button id={"btn-display-lines"} name={"btn-display-lines"} className={selectedMode === "lines" ? "btn-link-selected " : "btn-link "} onClick={() => {setSelectedMode("lines")}}>
+                  Display account lines
+              </button>
+            </div>
+            {selectedMode === "charts" &&
               <div>
-                <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
-                <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                {selectedTag === "" &&
+                  <div>
+                    <BalanceHistoryChart accountLines={selectedPeriod.lines}/>
+                    <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                  </div>
+                }
+
+                {selectedTag !== "" &&
+                  <div>
+                    <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                    <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
+                  </div>
+                }
               </div>
             }
 
-            {selectedTag !== "" &&
-              <div>
-                <TagHistoryMonthlyChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                <TagHistoryChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-                <TagRepartitionChart accountLines={selectedPeriod.lines} tag={selectedTag}/>
-              </div>
+            {selectedMode === "lines" &&
+              <Lines accountLines={selectedPeriod.lines} tag={selectedTag}/>
             }
           </div>
         }

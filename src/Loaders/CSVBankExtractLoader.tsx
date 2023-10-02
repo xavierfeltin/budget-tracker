@@ -29,7 +29,6 @@ export function CSVBankExtractLoader({
     };
 
     const csvFileToArray = (filename: string, csv: string) => {
-        debugger;
         const lineSeperator1 = "\r\n";
         const lineSeperator2 = "\n";
         let lineSeperator = lineSeperator1;

@@ -4,10 +4,12 @@ import { IAccountPeriod } from "../Data/Bank";
 
 export interface InputRangeProps {
     account: IAccountPeriod;
+    tag: string;
 }
 
 export function Balance({
-        account
+        account,
+        tag
     }: InputRangeProps) {
 
     const [debit, setDebit] = useState<number>(0);
@@ -17,15 +19,17 @@ export function Balance({
     useEffect(() => {
         let debit = 0;
         let credit = 0;
-        for (let i = 0; i < account.lines.length; i++) {
-            debit += account.lines[i].debit ?? 0;
-            credit += account.lines[i].credit ?? 0;
+
+        const taggedLines = tag === "" ? account.lines : account.lines.filter((line) => line.tags.indexOf(tag) !== -1);
+        for (let i = 0; i < taggedLines.length; i++) {
+            debit += taggedLines[i].debit ?? 0;
+            credit += taggedLines[i].credit ?? 0;
         }
 
         setDebit(debit);
         setCredit(credit);
         setBalance(account.lines[account.lines.length - 1].balance);
-    }, [account])
+    }, [account, tag])
 
     return (
         <div>

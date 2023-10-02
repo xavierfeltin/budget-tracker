@@ -10,7 +10,7 @@ import { Pie } from 'react-chartjs-2';
 import { Context } from 'chartjs-plugin-datalabels';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { PIE_BACKGROUND_COLORS, PIE_BORDER_COLORS } from "./ColorBank";
-import { IAccountLine, aggregateByTag, aggregateByTags } from "../Data/Bank";
+import { IAccountLine, aggregateByTags } from "../Data/Bank";
 
 export interface InputRangeProps {
     accountLines: IAccountLine[];
@@ -54,8 +54,10 @@ export function TagRepartitionChart({
     useEffect(() => {
         const taggedLines = tag === "" ? accountLines : accountLines.filter((line) => line.tags.indexOf(tag) !== -1);
         const groupByTag = aggregateByTags(taggedLines, -1, tag);
-        const tagLabels = Object.keys(groupByTag).sort();
-        const data: number[] = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort().map((subTag) => groupByTag[subTag].debit);
+        //const tagLabels = Object.keys(groupByTag).sort();
+        //const data: number[] = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort().map((subTag) => groupByTag[subTag].debit);
+        const tagLabels = Object.keys(groupByTag).filter((subTag) => groupByTag[subTag].debit !== 0).sort();
+        const data: number[] = tagLabels.filter((subTag) => groupByTag[subTag].debit !== 0).map((subTag) => groupByTag[subTag].debit);
 
         let datasets: IChartDataset[] = [];
         let dataset: IChartDataset = {

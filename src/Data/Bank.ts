@@ -236,7 +236,6 @@ export function extractIdFromLabel(label: string): string {
 }
 
 export function tagPeriods(periods: IAccountPeriod[], mapping: TMapping): IAccountPeriod[] {
-    debugger;
     const taggedPeriods = [...periods];
     for (let i = 0; i < taggedPeriods.length; i++) {
         const period = taggedPeriods[i];
